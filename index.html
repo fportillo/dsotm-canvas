@@ -7,12 +7,12 @@
       var c = canvas.getContext("2d");
       var w = c.canvas.width;
       var h = c.canvas.height;
-      var rainbow = {"red":"rgb(255,47,65)",
-                     "orange":"rgb(245,186,68)",
-                     "yellow":"rgb(254,254,84)",
-                     "green":"rgb(113,197,71)",
-                     "blue":"rgb(57,168,245)",
-                     "purple":"rgb(157,122,204)"
+      var rainbow = {"red"   : "rgba(255,47 ,65 , 0.8)",
+                     "orange": "rgba(245,186,68 , 0.8)",
+                     "yellow": "rgba(254,254,84 , 0.8)",
+                     "green" : "rgba(113,197,71 , 0.8)",
+                     "blue"  : "rgba(57, 168,245, 0.8)",
+                     "purple": "rgba(157,122,204, 0.8)"
                     };
       var rainbowMap = {};
       rainbowMap[0] = "red";
@@ -69,9 +69,13 @@
           return -1 * outOfCanvas();
       }
 
+      function white() {
+          return "rgba(255,255,255,0.8)";
+      }
+
       function drawPrism() {
           var x = w/2;
-          drawTriangle(x,getWhiteTriangleTop(),getWhiteTriangleHeight(),"white");
+          drawTriangle(x,getWhiteTriangleTop(),getWhiteTriangleHeight(),white());
           c.save();
           drawTriangle(x,getWhiteTriangleTop()+4,getWhiteTriangleHeight()-3,getGreyShadowStyle(0.3));
           c.restore();
@@ -81,7 +85,7 @@
           c.shadowOffsetX = outOfCanvas();
           drawTriangle(x+insideCanvas(), getBlackTriangleTop()-15, getBlackTriangleHeight()+12,"blue");
           c.restore();
-          c.shadowColor = "black";
+          c.shadowColor = "rgba(0,0,0,0.8)";
           c.shadowBlur = 10;
           c.shadowOffsetX = outOfCanvas();
           drawTriangle(x+insideCanvas(), getBlackTriangleTop(), getBlackTriangleHeight(),"black");
@@ -90,7 +94,7 @@
       function drawWhiteRay() {
           c.save();
           c.lineWidth = 3.2;
-          c.strokeStyle = "rgb(255,255,255)";
+          c.strokeStyle = "rgba(255,255,255,0.8)";
           c.beginPath();
           c.moveTo(0,425);
           c.lineTo(338,335);
@@ -101,7 +105,7 @@
       function drawRefractionInsidePrism() {
           c.save();
           var gradient = c.createLinearGradient(333,335,468,335);
-          gradient.addColorStop(0,"white");
+          gradient.addColorStop(0,white());
           gradient.addColorStop(1,getGreyShadowStyle(0.1));
           c.fillStyle = gradient;
           c.beginPath();
@@ -154,7 +158,28 @@
           c.restore();
       }
 
+      function generateNoise(opacity) {
+         var opacity = opacity || .2;
+
+         canvas.width = w;
+         canvas.height = h;
+
+         for ( x = 0; x < canvas.width; x+=4 ) {
+            for ( y = 0; y < canvas.height; y+=4 ) {
+               number = Math.floor( Math.random() * 60 );
+
+               c.save();
+               c.fillStyle = "rgba(" + number + "," + number + "," + number + "," + opacity + ")";
+               c.shadowColor="rgba(" + number + "," + number + "," + number + "," + opacity + ")";
+               c.shadowBlur=2;
+               c.fillRect(x, y, 2, 2);
+               c.restore();
+            }
+         }
+      }
+
       // Main
+      generateNoise(0.3);
       drawRainbow();
       drawPrism();
       drawWhiteRay();
