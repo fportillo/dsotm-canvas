@@ -1,0 +1,164 @@
+<html>
+  <body>
+      <canvas id="dsotm" width="800" height="800" style="background-color: black; margin: 0px; padding: 0px;"/>
+  </body>
+  <script>
+      var canvas = document.getElementById("dsotm");
+      var c = canvas.getContext("2d");
+      var w = c.canvas.width;
+      var h = c.canvas.height;
+      var rainbow = {"red":"rgb(255,47,65)",
+                     "orange":"rgb(245,186,68)",
+                     "yellow":"rgb(254,254,84)",
+                     "green":"rgb(113,197,71)",
+                     "blue":"rgb(57,168,245)",
+                     "purple":"rgb(157,122,204)"
+                    };
+      var rainbowMap = {};
+      rainbowMap[0] = "red";
+      rainbowMap[1] = "orange";
+      rainbowMap[2] = "yellow";
+      rainbowMap[3] = "green";
+      rainbowMap[4] = "blue";
+      rainbowMap[5] = "purple";
+
+      function round(amount) {
+          return Math.floor(amount);
+      }
+
+      function drawTriangle(x,y,prismHeight,fillStyle) {
+          c.fillStyle = fillStyle;
+          c.beginPath();
+          var goDown = round(prismHeight * getProportion());
+          c.moveTo(x,y);
+          c.lineTo(x+prismHeight,y+goDown);
+          c.lineTo(x-prismHeight,y+goDown);
+          c.lineTo(x,y);
+          c.fill();
+      }
+
+      function getGreyShadowStyle(alpha) {
+          return "rgba(49,73,71,"+ alpha +")";
+      }
+
+      function getProportion() {
+          return 1.732;
+      }
+
+      function getWhiteTriangleTop() {
+          return 225;
+      }
+
+      function getWhiteTriangleHeight() {
+          return 138;
+      }
+
+      function getBlackTriangleTop() {
+          return 260;
+      }
+
+      function getBlackTriangleHeight() {
+          return 110;
+      }
+
+      function outOfCanvas() {
+          return -1 * (2*w);
+      }
+
+      function insideCanvas() {
+          return -1 * outOfCanvas();
+      }
+
+      function drawPrism() {
+          var x = w/2;
+          drawTriangle(x,getWhiteTriangleTop(),getWhiteTriangleHeight(),"white");
+          c.save();
+          drawTriangle(x,getWhiteTriangleTop()+4,getWhiteTriangleHeight()-3,getGreyShadowStyle(0.3));
+          c.restore();
+          c.save();
+          c.shadowColor = getGreyShadowStyle(1.0);
+          c.shadowBlur = 13;
+          c.shadowOffsetX = outOfCanvas();
+          drawTriangle(x+insideCanvas(), getBlackTriangleTop()-15, getBlackTriangleHeight()+12,"blue");
+          c.restore();
+          c.shadowColor = "black";
+          c.shadowBlur = 10;
+          c.shadowOffsetX = outOfCanvas();
+          drawTriangle(x+insideCanvas(), getBlackTriangleTop(), getBlackTriangleHeight(),"black");
+      }
+
+      function drawWhiteRay() {
+          c.save();
+          c.lineWidth = 3.2;
+          c.strokeStyle = "rgb(255,255,255)";
+          c.beginPath();
+          c.moveTo(0,425);
+          c.lineTo(338,335);
+          c.stroke();
+          c.restore();
+      }
+
+      function drawRefractionInsidePrism() {
+          c.save();
+          var gradient = c.createLinearGradient(333,335,468,335);
+          gradient.addColorStop(0,"white");
+          gradient.addColorStop(1,getGreyShadowStyle(0.1));
+          c.fillStyle = gradient;
+          c.beginPath();
+          c.moveTo(333,335);
+          c.lineTo(448,310);
+          c.lineTo(476,362);
+          c.lineTo(338,339);
+          c.lineTo(333,335);
+          c.fill();
+          c.restore();
+      }
+
+      function drawFilledPolygon(pointArray, fillStyle) {
+          c.save();
+          c.fillStyle = fillStyle;
+          c.beginPath();
+          c.moveTo(pointArray[0]["x"], pointArray[0]["y"]);
+          for (var i = 1; i < pointArray.length; i++) {
+              c.lineTo(pointArray[i].x, pointArray[i].y);
+          }
+          c.lineTo(pointArray[0].x, pointArray[0].y);
+          c.fill();
+          c.restore();
+      }
+
+      function drawRainbow() {
+          var rainbowStartLeft = 448;
+          var rainbowStartTop = 310;
+          var rainbowStopTop = 360;
+          var stopInc = 13.5;
+          var startInc = 5;
+          var rainbowColoredRayOverlapAmount = 0.5;
+          c.save();
+          for (var i = 0; i < 6; i++) {
+
+              var point1 = {"x" : rainbowStartLeft + startInc * i, "y" : rainbowStartTop + startInc * i * getProportion()};
+              var point2 = {"x" : w, "y" : rainbowStopTop + stopInc * i};
+              var point3 = {"x" : w, "y" : rainbowStopTop + stopInc + stopInc * i + rainbowColoredRayOverlapAmount};
+              var point4 = {"x" : rainbowStartLeft + startInc + startInc * i, "y" : rainbowStartTop + startInc * getProportion() + startInc * i * getProportion() + rainbowColoredRayOverlapAmount};
+
+              var pointArray = new Array();
+              pointArray[0] = point1;
+              pointArray[1] = point2;
+              pointArray[2] = point3;
+              pointArray[3] = point4;
+
+              drawFilledPolygon(pointArray, rainbow[rainbowMap[i]]);
+
+          }
+          c.restore();
+      }
+
+      // Main
+      drawRainbow();
+      drawPrism();
+      drawWhiteRay();
+      drawRefractionInsidePrism();
+
+  </script>
+</html>
