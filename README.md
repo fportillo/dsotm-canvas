@@ -1,10 +1,10 @@
 # dsotm-canvas
 The Dark Side Of The Moon Html5 Canvas POC
 
-# Getting Started
+## Getting Started
 Just clone this repo and open the index.html file.
 
-# Motivation
+## Motivation
 Some time ago I decided to take a look at the Canvas API.
 
 But drawing disconnected lines, did not motivate me for a POC.
