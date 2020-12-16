@@ -2,7 +2,7 @@
 The Dark Side Of The Moon Html5 Canvas POC
 
 ## Getting Started
-Just clone this repo and open the index.html file.
+Just clone this repo and open the index.html file in your browser.
 
 ## Motivation
 Some time ago I decided to take a look at the Canvas API.
